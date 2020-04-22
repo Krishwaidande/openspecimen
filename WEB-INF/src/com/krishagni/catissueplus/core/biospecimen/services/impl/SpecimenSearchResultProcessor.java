@@ -70,7 +70,7 @@ public class SpecimenSearchResultProcessor extends AbstractSearchResultProcessor
 			}
 
 			String clause = "(" + String.join(" or ", subClauses) + ")";
-			if (Resource.VISIT_N_PRIMARY_SPMN.getName().equals(siteCpEntry.getKey())) {
+			if (Resource.PRIMARY_SPECIMEN.getName().equals(siteCpEntry.getKey())) {
 				clause = "(spmn.lineage = 'New' and " + clause + ")";
 			}
 

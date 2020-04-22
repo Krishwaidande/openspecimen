@@ -24,19 +24,19 @@ angular.module('os.biospecimen.specimen')
           allSpecimenUpdateOpts: {
             cp: cpShortTitle,
             sites: sites,
-            resource: 'VisitAndSpecimen',
+            resource: 'Specimen',
             operations: ['Update']
           },
           specimenUpdateOpts: {
             cp: cpShortTitle,
             sites: sites,
-            resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            resources: ['Specimen', 'PrimarySpecimen'],
             operations: ['Update']
           },
           specimenDeleteOpts: {
             cp: cpShortTitle,
             sites: sites,
-            resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            resources: ['Specimen', 'PrimarySpecimen'],
             operations: ['Delete']
           }
         };

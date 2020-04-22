@@ -2,7 +2,7 @@
   <div class="os-page-commands">
     <div class="left">
       <span ng-if="visitCtx.showEdit && (!!visit.id || cpr.hasConsented)">
-        <button show-if-allowed="specimenResource.updateOpts" class="default"
+        <button show-if-allowed="visitResource.updateOpts" class="default"
           ng-switch on="!!visit.id" ui-sref="visit-addedit">
           <span ng-switch-when="true">
             <span class="fa fa-pencil"></span>
@@ -46,7 +46,7 @@
         <span class="fa fa-print"></span>
         <span translate="common.buttons.print">Print</span>
       </button>
-      <button ng-if="!!visit.id" show-if-allowed="specimenResource.deleteOpts" class="default"
+      <button ng-if="!!visit.id" show-if-allowed="visitResource.deleteOpts" class="default"
         ng-click="deleteVisit()">
         <span class="fa fa-trash"></span>
         <span translate="common.buttons.delete">Delete</span>
@@ -73,10 +73,12 @@
         </div>
       </div>
 
-      <os-specimen-tree cp="cp" cpr="cpr" visit="visit" specimens="specimens"
-        allowed-ops="specimenAllowedOps" reload="reload()"
-        pending-spmns-disp-interval="pendingSpmnsDispInterval">
-      </os-specimen-tree>
+      <div ng-if="cpViewCtx.spmnReadAllowed">
+        <os-specimen-tree cp="cp" cpr="cpr" visit="visit" specimens="specimens"
+          allowed-ops="specimenAllowedOps" reload="reload()"
+          pending-spmns-disp-interval="pendingSpmnsDispInterval">
+        </os-specimen-tree>
+      </div>
     </div>
 
     <div class="os-col os-no-border" os-right-drawer open-width="34" style="position: static;">

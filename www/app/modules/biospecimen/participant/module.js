@@ -37,31 +37,32 @@ angular.module('os.biospecimen.participant',
           $scope.orderCreateOpts = {cp: cp.shortTitle, sites: sites, resource: 'Order', operations: ['Create']};
           $scope.shipmentCreateOpts = {cp: cp.shortTitle, sites: sites, resource: 'ShippingAndTracking', operations: ['Create']};
           $scope.consentUpdateOpts = {cp: cp.shortTitle, sites: sites, resource: 'Consent', operations: ['Update']};
+          $scope.visitUpdateOpts = {cp: cp.shortTitle, sites: sites, resource: 'Visit', operations: ['Update']};
           $scope.specimenReadOpts = {
             cp: cp.shortTitle,
             sites: sites,
-            resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            resources: ['Specimen', 'PrimarySpecimen'],
             operations: ['Read']
           };
 
           $scope.specimenUpdateOpts = {
             cp: cp.shortTitle,
             sites: sites,
-            resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            resources: ['Specimen', 'PrimarySpecimen'],
             operations: ['Update']
           };
 
           $scope.allSpecimenUpdateOpts = {
             cp: cp.shortTitle,
             sites: sites,
-            resource: 'VisitAndSpecimen',
+            resource: 'Specimen',
             operations: ['Update']
           };
 
           $scope.specimenDeleteOpts = {
             cp: cp.shortTitle,
             sites: sites,
-            resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            resources: ['Specimen', 'PrimarySpecimen'],
             operations: ['Delete']
           };
         },
@@ -91,20 +92,33 @@ angular.module('os.biospecimen.participant',
               cp: cp.shortTitle
             });
 
-            var visitSpmnEximAllowed = AuthorizationService.isAllowed({
-              resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            var visitReadAllowed = AuthorizationService.isAllowed({
+              resource: 'Visit',
+              operations: ['Read'],
+              cp: cp.shortTitle,
+              sites: cp.cpSites.map(function(cpSite) { return cpSite.siteName; })
+            });
+
+            var visitEximAllowed = AuthorizationService.isAllowed({
+              resource: 'Visit',
+              operations: ['Export Import'],
+              cp: cp.shortTitle
+            });
+
+            var spmnEximAllowed = AuthorizationService.isAllowed({
+              resources: ['Specimen', 'PrimarySpecimen'],
               operations: ['Export Import'],
               cp: cp.shortTitle
             });
 
             var allSpmnEximAllowed = AuthorizationService.isAllowed({
-              resources: ['VisitAndSpecimen'],
+              resources: ['Specimen'],
               operations: ['Export Import'],
               cp: cp.shortTitle
             });
 
             var spmnReadAllowed = AuthorizationService.isAllowed({
-              resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+              resources: ['Specimen', 'PrimarySpecimen'],
               operations: ['Read'],
               cp: cp.shortTitle,
               sites: cp.cpSites.map(function(cpSite) { return cpSite.siteName; })
@@ -137,11 +151,14 @@ angular.module('os.biospecimen.participant',
 
             return {
               participantImportAllowed: participantEximAllowed,
-              visitSpecimenImportAllowed: visitSpmnEximAllowed,
+              visitImportAllowed: visitEximAllowed,
+              specimenImportAllowed: spmnEximAllowed,
               participantExportAllowed: participantEximAllowed,
-              visitSpecimenExportAllowed: visitSpmnEximAllowed,
+              visitExportAllowed: visitEximAllowed,
+              specimenExportAllowed: spmnEximAllowed,
               participantUpdateAllowed: participantUpdateAllowed,
               participantDeleteAllowed: participantDeleteAllowed,
+              visitReadAllowed: visitReadAllowed,
               spmnReadAllowed: spmnReadAllowed,
               allSpmnEximAllowed: allSpmnEximAllowed,
               consentsReadAllowed: consentsReadAllowed,
@@ -228,8 +245,12 @@ angular.module('os.biospecimen.participant',
           var ctx = $scope.listViewCtx = {
             sopDocDownloadUrl: cp.getSopDocDownloadUrl(),
             spmnListCfg: spmnListCfg,
-            showImport: (cpViewCtx.visitSpecimenImportAllowed || (!cp.specimenCentric && cpViewCtx.participantImportAllowed)),
-            showExport: (cpViewCtx.visitSpecimenExportAllowed || (!cp.specimenCentric && cpViewCtx.participantExportAllowed))
+            showImport: (cpViewCtx.visitImportAllowed ||
+                         cpViewCtx.specimenImportAllowed ||
+                         (!cp.specimenCentric && cpViewCtx.participantImportAllowed)),
+            showExport: (cpViewCtx.visitExportAllowed ||
+                         cpViewCtx.specimenExportAllowed ||
+                         (!cp.specimenCentric && cpViewCtx.participantExportAllowed))
           };
 
           ctx.sopDoc = cp.sopDocumentName;
@@ -340,11 +361,11 @@ angular.module('os.biospecimen.participant',
               entityTypes.push('Consent');
             }
 
-            if (!cp.specimenCentric && cpViewCtx.visitSpecimenImportAllowed) {
+            if (!cp.specimenCentric && cpViewCtx.visitImportAllowed) {
               entityTypes.push('SpecimenCollectionGroup');
             }
 
-            if (cpViewCtx.visitSpecimenImportAllowed) {
+            if (cpViewCtx.specimenImportAllowed) {
               entityTypes.push('Specimen');
               entityTypes.push('SpecimenEvent');
             }
@@ -405,11 +426,11 @@ angular.module('os.biospecimen.participant',
               entityTypes.push('Consent');
             }
 
-            if (!cp.specimenCentric && cpViewCtx.visitSpecimenExportAllowed) {
+            if (!cp.specimenCentric && cpViewCtx.visitExportAllowed) {
               entityTypes.push('SpecimenCollectionGroup');
             }
 
-            if (cpViewCtx.visitSpecimenExportAllowed) {
+            if (cpViewCtx.specimenExportAllowed) {
               entityTypes.push('Specimen');
               entityTypes.push('SpecimenEvent');
             }
@@ -748,11 +769,11 @@ angular.module('os.biospecimen.participant',
           },
 
           visits: function($stateParams, cpViewCtx, allowedEvents, visitsTab, Visit) {
-            if (!cpViewCtx.spmnReadAllowed) {
+            if (!cpViewCtx.visitReadAllowed) {
               return null;
             }
 
-            return Visit.listFor($stateParams.cprId, true, visitsTab.sortByDates).then(
+            return Visit.listFor($stateParams.cprId, cpViewCtx.spmnReadAllowed, visitsTab.sortByDates).then(
               function(visits) {
                 return visits.filter(
                   function(v) {

@@ -32,6 +32,7 @@ import com.krishagni.catissueplus.core.biospecimen.repository.DaoFactory;
 import com.krishagni.catissueplus.core.biospecimen.services.SpecimenService;
 import com.krishagni.catissueplus.core.biospecimen.services.VisitService;
 import com.krishagni.catissueplus.core.common.CollectionUpdater;
+import com.krishagni.catissueplus.core.common.access.AccessCtrlMgr;
 import com.krishagni.catissueplus.core.common.domain.PrintItem;
 import com.krishagni.catissueplus.core.common.errors.OpenSpecimenException;
 import com.krishagni.catissueplus.core.common.events.DependentEntityDetail;
@@ -40,6 +41,7 @@ import com.krishagni.catissueplus.core.common.service.impl.EventPublisher;
 import com.krishagni.catissueplus.core.common.util.Status;
 import com.krishagni.catissueplus.core.common.util.Utility;
 import com.krishagni.catissueplus.core.de.services.impl.FormUtil;
+import com.krishagni.rbac.common.errors.RbacErrorCode;
 
 @Configurable
 @Audited
@@ -375,8 +377,20 @@ public class Visit extends BaseExtensionEntity {
 		if (checkDependency) {
 			ensureNoActiveChildObjects();
 		}
-		
+
+		Boolean hasDeleteSpmnRights = getRegistration().getHasDeleteSpecimenRights();
 		for (Specimen specimen : getSpecimens()) {
+			if (specimen.isActiveOrClosed() && specimen.isCollected()) {
+				if (hasDeleteSpmnRights == null) {
+					hasDeleteSpmnRights = AccessCtrlMgr.getInstance().hasDeleteSpecimenRights(getRegistration());
+					getRegistration().setHasDeleteSpecimenRights(hasDeleteSpmnRights);
+				}
+
+				if (!hasDeleteSpmnRights) {
+					throw OpenSpecimenException.userError(RbacErrorCode.ACCESS_DENIED);
+				}
+			}
+
 			specimen.disable(checkDependency);
 		}
 		

@@ -216,7 +216,7 @@ angular.module('openspecimen')
         },
 
         {
-          showIf: {resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'], operations: ['Read']},
+          showIf: {resources: ['Specimen', 'PrimarySpecimen'], operations: ['Read']},
           sref: 'specimen-lists',
           icon: 'fa fa-shopping-cart',
           title: 'menu.specimen_lists',

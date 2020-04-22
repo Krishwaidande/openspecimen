@@ -1,7 +1,7 @@
 angular.module('openspecimen')
   .directive('osShowIfMenuItemsPresent', function($timeout) {
     function isElementDisplayed(item) {
-      return !(item.style.display == 'none' || item.style.visibility == 'hidden' || parseFloat(item.style.opacity) <= 0);
+      return !(item.style.display == 'none' || item.style.visibility == 'hidden' || parseFloat(item.style.opacity) <= 0 || item.classList.contains('ng-hide'));
     }
 
     return {

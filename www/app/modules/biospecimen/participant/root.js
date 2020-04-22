@@ -69,31 +69,47 @@ angular.module('os.biospecimen.participant.root', ['os.biospecimen.models'])
         }
       };
 
-      // Specimen and Visit Authorization Options
-      $scope.specimenResource = {
-        allReadOpts: {
-          resources: ['VisitAndSpecimen'],
-          operations: ['Read'],
-          cp: $scope.cpr.cpShortTitle,
-          sites: sites
-        },
-
-        allUpdateOpts: {
-          resources: ['VisitAndSpecimen'],
-          operations: ['Update'],
-          cp: $scope.cpr.cpShortTitle,
-          sites: sites
-        },
-
+      $scope.visitResource = {
         updateOpts: {
-          resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+          resource: 'Visit',
           operations: ['Update'],
           cp: $scope.cpr.cpShortTitle,
           sites: sites
         },
 
         deleteOpts: {
-          resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+          resource: 'Visit',
+          operations: ['Delete'],
+          cp: $scope.cpr.cpShortTitle,
+          sites: sites
+        }
+      };
+
+      // Specimen Authorization Options
+      $scope.specimenResource = {
+        allReadOpts: {
+          resources: ['Specimen'],
+          operations: ['Read'],
+          cp: $scope.cpr.cpShortTitle,
+          sites: sites
+        },
+
+        allUpdateOpts: {
+          resources: ['Specimen'],
+          operations: ['Update'],
+          cp: $scope.cpr.cpShortTitle,
+          sites: sites
+        },
+
+        updateOpts: {
+          resources: ['Specimen', 'PrimarySpecimen'],
+          operations: ['Update'],
+          cp: $scope.cpr.cpShortTitle,
+          sites: sites
+        },
+
+        deleteOpts: {
+          resources: ['Specimen', 'PrimarySpecimen'],
           operations: ['Delete'],
           cp: $scope.cpr.cpShortTitle,
           sites: sites

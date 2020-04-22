@@ -69,6 +69,7 @@
             <span ng-switch-default translate="common.buttons.create">Create</span>
           </button>
           <button class="btn btn-primary" os-form-submit="saveVisit(true)"
+            show-if-allowed="specimenResource.updateOpts"
             ng-show="visitCtx.pendingToStart && currVisit.status == 'Complete'">
             <span translate="visits.add_n_collect">Proceed to Collection</span>
           </button>

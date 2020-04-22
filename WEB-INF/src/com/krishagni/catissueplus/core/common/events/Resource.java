@@ -10,10 +10,12 @@ public enum Resource {
 	PARTICIPANT_DEID("ParticipantDeid"),
 
 	CONSENT("Consent"),
-	
-	VISIT_N_SPECIMEN("VisitAndSpecimen"),
 
-	VISIT_N_PRIMARY_SPMN("VisitAndPrimarySpecimen"),
+	VISIT("Visit"),
+	
+	SPECIMEN("Specimen"),
+
+	PRIMARY_SPECIMEN("PrimarySpecimen"),
 	
 	SURGICAL_PATHOLOGY_REPORT("SurgicalPathologyReport"),
 	

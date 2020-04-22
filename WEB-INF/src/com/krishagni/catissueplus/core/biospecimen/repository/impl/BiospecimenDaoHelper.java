@@ -75,7 +75,7 @@ public class BiospecimenDaoHelper {
 		Map<String, Set<SiteCpPair>> siteCpsMap = SiteCpPair.segregateByResources(siteCps);
 		for (Map.Entry<String, Set<SiteCpPair>> siteCpEntry : siteCpsMap.entrySet()) {
 			Junction siteCpsCond = getSiteCpsCond(siteCpEntry.getValue(), useMrnSites);
-			if (spmnList && Resource.VISIT_N_PRIMARY_SPMN.getName().equals(siteCpEntry.getKey())) {
+			if (spmnList && Resource.PRIMARY_SPECIMEN.getName().equals(siteCpEntry.getKey())) {
 				mainCond.add(
 					Restrictions.and(
 						Restrictions.eq("specimen.lineage", "New"),
@@ -121,7 +121,7 @@ public class BiospecimenDaoHelper {
 		StringBuilder aql = new StringBuilder();
 		for (Map.Entry<String, Set<SiteCpPair>> siteCpsEntry : siteCpsByResources.entrySet()) {
 			String restriction = getSiteCpsCondAql0(siteCpsEntry.getValue(), useMrnSites);
-			if (Resource.VISIT_N_PRIMARY_SPMN.getName().equals(siteCpsEntry.getKey())) {
+			if (Resource.PRIMARY_SPECIMEN.getName().equals(siteCpsEntry.getKey())) {
 				restriction = "(Specimen.lineage = \"New\" and " + restriction + ")";
 			}
 

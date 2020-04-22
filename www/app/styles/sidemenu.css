@@ -126,6 +126,7 @@ ul.os-side-menu li.highlight.active {
   position: static;
   top: initial;
   padding: 0px 15px 15px;
+  min-height: 30px;
 }
 
 .os-side-menu-wrapper.opened + .os-side-menu-page-content {

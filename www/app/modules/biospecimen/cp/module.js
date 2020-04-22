@@ -34,7 +34,7 @@ angular.module('os.biospecimen.cp',
           }
           
           $scope.specimenResource = {
-            updateOpts: {resource: 'VisitAndSpecimen', operations: ['Create', 'Update']}
+            updateOpts: {resource: 'Specimen', operations: ['Create', 'Update']}
           }
           
           $scope.codingEnabled = $scope.global.appProps.cp_coding_enabled;
@@ -56,13 +56,18 @@ angular.module('os.biospecimen.cp',
               operations: ['Export Import']
             });
 
-            var visitSpmnEximAllowed = AuthorizationService.isAllowed({
-              resources: ['VisitAndSpecimen', 'VisitAndPrimarySpecimen'],
+            var visitEximAllowed = AuthorizationService.isAllowed({
+              resource: 'Visit',
+              operations: ['Export Import']
+            });
+
+            var spmnEximAllowed = AuthorizationService.isAllowed({
+              resources: ['Specimen', 'PrimarySpecimen'],
               operations: ['Export Import']
             });
 
             var allSpmnEximAllowed = AuthorizationService.isAllowed({
-              resources: ['VisitAndSpecimen'],
+              resources: ['Specimen'],
               operations: ['Export Import']
             });
 
@@ -80,9 +85,11 @@ angular.module('os.biospecimen.cp',
               cpCreateAllowed: cpCreateAllowed,
               cpUpdateAllowed: cpCreateAllowed || cpUpdateAllowed,
               participantImportAllowed: participantEximAllowed,
-              visitSpecimenImportAllowed: visitSpmnEximAllowed,
+              visitImportAllowed: visitEximAllowed,
+              specimenImportAllowed: spmnEximAllowed,
               participantExportAllowed: participantEximAllowed,
-              visitSpecimenExportAllowed: visitSpmnEximAllowed,
+              visitExportAllowed: visitEximAllowed,
+              specimenExportAllowed: spmnEximAllowed,
               allSpmnEximAllowed: allSpmnEximAllowed,
               consentsEximAllowed: consentsEximAllowed,
               queryReadAllowed: queryReadAllowed
@@ -139,8 +146,12 @@ angular.module('os.biospecimen.cp',
               entityTypes.push('Consent');
             }
 
-            if (cpsCtx.visitSpecimenImportAllowed) {
-              entityTypes = entityTypes.concat(['SpecimenCollectionGroup', 'Specimen', 'SpecimenEvent']);
+            if (cpsCtx.visitImportAllowed) {
+              entityTypes.push('SpecimenCollectionGroup');
+            }
+
+            if (cpsCtx.specimenImportAllowed) {
+              entityTypes = entityTypes.concat(['Specimen', 'SpecimenEvent']);
 
               if (cpsCtx.allSpmnEximAllowed) {
                 entityTypes.push('DerivativeAndAliquots');
@@ -204,11 +215,11 @@ angular.module('os.biospecimen.cp',
               entityTypes.push('Consent');
             }
 
-            if (cpsCtx.visitSpecimenExportAllowed) {
+            if (cpsCtx.visitExportAllowed) {
               entityTypes.push('SpecimenCollectionGroup');
             }
 
-            if (cpsCtx.visitSpecimenExportAllowed) {
+            if (cpsCtx.specimenExportAllowed) {
               entityTypes.push('Specimen');
               entityTypes.push('SpecimenEvent');
             }

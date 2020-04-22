@@ -93,7 +93,11 @@ angular.module('os.biospecimen.visit', [
         url: '/detail',
         templateUrl: 'modules/biospecimen/participant/visit/detail.html',
         resolve: {
-          specimens: function(cpr, visit, Specimen) {
+          specimens: function(cpr, visit, cpViewCtx, Specimen) {
+            if (!cpViewCtx.spmnReadAllowed) {
+              return [];
+            }
+
             var criteria = { visitId: visit.id, eventId: visit.eventId };
             return Specimen.listFor(cpr.id, criteria);
           }
@@ -157,7 +161,7 @@ angular.module('os.biospecimen.visit', [
         template: '<div ui-view></div>',
         controller: function($scope, visit, forms, records, ExtensionsUtil) {
           $scope.extnOpts = {
-            update: $scope.specimenResource.updateOpts,
+            update: $scope.visitResource.updateOpts,
             entity: visit,
             isEntityActive: visit.activityStatus == 'Active'
           }

@@ -1300,7 +1300,7 @@ public class SpecimenServiceImpl implements SpecimenService, ObjectAccessor, Con
 				List<SiteCpPair> siteCps = AccessCtrlMgr.getInstance().getReadAccessSpecimenSiteCps(cpId, false);
 				if (siteCps != null && siteCps.isEmpty()) {
 					endOfSpecimens = true;
-				} else if (!AccessCtrlMgr.getInstance().hasVisitSpecimenEximRights(cpId)) {
+				} else if (!AccessCtrlMgr.getInstance().hasSpecimenEximRights(cpId)) {
 					endOfSpecimens = true;
 				} else {
 					crit = new SpecimenListCriteria()

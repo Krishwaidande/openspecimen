@@ -113,7 +113,7 @@
                             <span translate="visits.ctx_menu.view_visit">View Visit</span>
                           </a>
                         </li>
-                        <li show-if-allowed="specimenResource.updateOpts">
+                        <li show-if-allowed="visitResource.updateOpts">
                           <a ui-sref="visit-addedit({visitId: visit.id, eventId: visit.eventId, newVisit: true})"> 
                             <i class="fa fa-repeat"></i>
                             <span translate="visits.ctx_menu.new_visit">New Visit</span>
@@ -139,42 +139,50 @@
           <table class="os-table os-table-muted-hdr os-border">
             <thead class="os-table-head">
               <tr class="row">
-                <td class="col col-xs-4" translate="visits.title">Visit</td>
-                <td class="col col-xs-3" translate="common.date">Date</td>
-                <td class="col col-xs-3" translate="visits.anticipated_specimens">Anticipated Specimens</td>
-                <td class="col col-xs-2">&nbsp;</td>
+                <td class="col" ng-class="{'col-xs-4': cpViewCtx.spmnReadAllowed}">
+                  <span translate="visits.title">Visit</span>
+                </td>
+                <td class="col" ng-class="{'col-xs-3': cpViewCtx.spmnReadAllowed}">
+                  <span translate="common.date">Date</span>
+                </td>
+                <td class="col col-xs-3" ng-show="cpViewCtx.spmnReadAllowed">
+                  <span translate="visits.anticipated_specimens">Anticipated Specimens</span>
+                </td>
+                <td class="col col-xs-2">
+                  <span>&nbsp;</span>
+                </td>
               </tr>
             </thead>
             <tbody class="os-table-body">
               <tr class="row" ng-repeat="visit in anticipatedVisits">
-                <td class="col col-xs-4">
-                  <a ui-sref="participant-detail.visits({visitId: visit.id, eventId: visit.eventId})">
+                <td class="col">
+                  <a ui-sref="visit-detail.overview({visitId: visit.id, eventId: visit.eventId})">
                     <os-event-desc event-point="visit.eventPoint" event-point-unit="visit.eventPointUnit"
                       event-label="visit.eventLabel"></os-event-desc>
                   </a>
                 </td>
-                <td class="col col-xs-3" ng-switch on="!!visit.id && !!visit.visitDate">
+                <td class="col" ng-switch on="!!visit.id && !!visit.visitDate">
                   <span ng-switch-when="true">{{visit.visitDate | date: global.dateFmt | osNoValue}}</span>
                   <span ng-switch-default>{{visit.anticipatedVisitDate | date: global.dateFmt | osNoValue}}</span>
                 </td>
-                <td class="col col-xs-3">
+                <td class="col" ng-show="cpViewCtx.spmnReadAllowed">
                   <span>{{visit.pendingPrimarySpmns}}</span>
                 </td>
-                <td class="col col-xs-2">
+                <td class="col">
                   <div class="os-more-option-btns" ng-show="cpr.hasConsented">
-                    <span dropdown show-if-allowed="specimenResource.updateOpts">
+                    <span dropdown>
                       <button class="btn btn-xs btn-default dropdown-toggle">
                         <span translate="specimens.buttons.collect">Collect</span>
                         <span class="fa fa-caret-down"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right">
-                        <li>
+                        <li show-if-allowed="visitResource.updateOpts">
                           <a ui-sref="visit-addedit({visitId: visit.id, eventId: visit.eventId})">
                             <span class="fa fa-list-alt"></span>
                             <span translate="visits.title">Visit</span>
                           </a>
                         </li>
-                        <li>
+                        <li show-if-allowed="specimenResource.updateOpts">
                           <a ng-click="collect(visit)">
                             <span class="fa fa-flask"></span>
                             <span translate="specimens.list">Specimens</span>
@@ -200,17 +208,30 @@
   <table class="os-table os-table-muted-hdr os-border">
     <thead class="os-table-head">
       <tr class="row">
-        <th class="col os-col-20" translate="visits.event_label">Event Label</div>
-        <th class="col os-col-20" translate="visits.name">Name</div>
-        <th class="col os-col-15" translate="common.date">Date</div>
-        <th class="col os-col-20" translate="visits.collection_status">Collection Status</div>
-        <th class="col os-col-20" translate="visits.storage_utilization">Utilization</div>
-        <th class="col os-col-5">&nbsp;</div>
+        <th class="col" ng-class="{'os-col-20': cpViewCtx.spmnReadAllowed}">
+          <span translate="visits.event_label">Event Label</span>
+        </th>
+        <th class="col" ng-class="{'os-col-20': cpViewCtx.spmnReadAllowed}">
+          <span translate="visits.name">Name</span>
+        </th>
+        <th class="col" ng-class="{'os-col-15': cpViewCtx.spmnReadAllowed}">
+          <span translate="common.date">Date</span>
+        </th>
+        <th class="col" ng-if="!cpViewCtx.spmnReadAllowed">
+          <span translate="visits.visit_site">Site</span>
+        </th>
+        <th class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
+          <span translate="visits.collection_status">Collection Status</span>
+        </th>
+        <th class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
+          <span translate="visits.storage_utilization">Utilization</span>
+        </th>
+        <th class="col os-col-5">&nbsp;</th>
       </tr>
     </thead>
     <tbody class="os-table-body">
       <tr class="row title" ng-repeat="visit in occurredVisits">
-        <td class="col os-col-20">
+        <td class="col">
           <a class="os-tree-image-icon" ui-sref="visit-detail.spr({visitId: visit.id, eventId: visit.eventId})"
             os-tooltip="{{'visits.spr_help' | translate}}" placement="right" ng-if="!!visit.sprName">
             <span class="fa fa-file-text-o"></span>
@@ -221,16 +242,19 @@
             </os-event-desc>
           </a>
         </td>
-        <td class="col os-col-20">
+        <td class="col">
           <span>{{visit.name}}</span>
         </td>
-        <td class="col os-col-15">
+        <td class="col">
           <span>{{visit.visitDate | date: global.dateFmt}}</span>
         </td>
-        <td class="col os-col-20">
+        <td class="col" ng-if="!cpViewCtx.spmnReadAllowed">
+          <span>{{visit.site}}</span>
+        </td>
+        <td class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
           <div ng-include src="'modules/biospecimen/participant/overview-visit-spmns-count.html'"></div>
         </td>
-        <td class="col os-col-20">
+        <td class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
           <div ng-include src="'modules/biospecimen/participant/overview-visit-spmns-storage.html'"></div>
         </td>
         <td class="col os-col-5 os-more-options">
@@ -248,8 +272,12 @@
         <th class="col" ng-repeat="column in occurredVisitsCols" ng-style="{'min-width': column.width}">
           <span>{{column.caption}}</span>
         </th>
-        <th class="col" style="min-width: 150px;" translate="visits.collection_status">Collection Status</div>
-        <th class="col" style="min-width: 150px;" translate="visits.storage_utilization">Utilization</div>
+        <th class="col" style="min-width: 150px;" ng-if="cpViewCtx.spmnReadAllowed">
+          <span translate="visits.collection_status">Collection Status</span>
+        </th>
+        <th class="col" style="min-width: 150px;" ng-if="cpViewCtx.spmnReadAllowed">
+          <span translate="visits.storage_utilization">Utilization</span>
+        </th>
         <th class="col os-col-5">&nbsp;</div>
       </tr>
     </thead>
@@ -267,10 +295,10 @@
           </span>
           <span ng-if="$index > 0">{{column.value | osNoValue}}</span>
         </td>
-        <td class="col os-col-20">
+        <td class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
           <div ng-include src="'modules/biospecimen/participant/overview-visit-spmns-count.html'"></div>
         </td>
-        <td class="col os-col-20">
+        <td class="col os-col-20" ng-if="cpViewCtx.spmnReadAllowed">
           <div ng-include src="'modules/biospecimen/participant/overview-visit-spmns-storage.html'"></div>
         </td>
         <td class="col os-col-5 os-more-options">
@@ -293,7 +321,7 @@
           <span translate="visits.ctx_menu.view_visit">View Visit</span>
         </a>
       </li>
-      <li show-if-allowed="specimenResource.updateOpts">
+      <li show-if-allowed="visitResource.updateOpts">
         <a ui-sref="visit-addedit({visitId: visit.id, eventId: visit.eventId, newVisit: true})"> 
           <span class="fa fa-repeat"></span>
           <span translate="visits.ctx_menu.new_visit">New Visit</span>
@@ -414,4 +442,3 @@
     </tbody>
   </table>
 </script>
-

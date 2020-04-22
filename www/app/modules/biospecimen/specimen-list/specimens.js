@@ -4,7 +4,7 @@ angular.module('os.biospecimen.specimenlist')
     Specimen, SpecimensHolder, DeleteUtil, Alerts, Util, SettingUtil) {
 
     function init() { 
-      $scope.specimenUpdateOpts = {resource: 'VisitAndSpecimen', operations: ['Update']};
+      $scope.specimenUpdateOpts = {resources: ['Specimen', 'PrimarySpecimen'], operations: ['Update']};
       $scope.orderCreateOpts    = {resource: 'Order', operations: ['Create']};
 
       $scope.ctx = {

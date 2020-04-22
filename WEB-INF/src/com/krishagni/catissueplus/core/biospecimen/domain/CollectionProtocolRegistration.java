@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.krishagni.catissueplus.core.administrative.domain.Site;
 import com.krishagni.catissueplus.core.administrative.domain.User;
 import com.krishagni.catissueplus.core.biospecimen.domain.factory.ParticipantErrorCode;
+import com.krishagni.catissueplus.core.common.access.AccessCtrlMgr;
 import com.krishagni.catissueplus.core.common.errors.OpenSpecimenException;
 import com.krishagni.catissueplus.core.common.events.DependentEntityDetail;
 import com.krishagni.catissueplus.core.common.service.LabelGenerator;
 import com.krishagni.catissueplus.core.common.util.Status;
 import com.krishagni.catissueplus.core.common.util.Utility;
 import com.krishagni.catissueplus.core.de.services.impl.FormUtil;
+import com.krishagni.rbac.common.errors.RbacErrorCode;
 
 @Configurable
 @Audited
@@ -70,6 +72,8 @@ public class CollectionProtocolRegistration extends BaseEntity {
 	private LabelGenerator labelGenerator;
 
 	private transient boolean forceDelete;
+
+	private transient Boolean hasDeleteSpecimenRights;
 
 	public static String getEntityName() {
 		return ENTITY_NAME;
@@ -258,6 +262,14 @@ public class CollectionProtocolRegistration extends BaseEntity {
 		this.forceDelete = forceDelete;
 	}
 
+	public Boolean getHasDeleteSpecimenRights() {
+		return hasDeleteSpecimenRights;
+	}
+
+	public void setHasDeleteSpecimenRights(Boolean hasDeleteSpecimenRights) {
+		this.hasDeleteSpecimenRights = hasDeleteSpecimenRights;
+	}
+
 	public boolean isDeleted() {
 		return Status.ACTIVITY_STATUS_DISABLED.getStatus().equals(getActivityStatus());
 	}
@@ -296,8 +308,19 @@ public class CollectionProtocolRegistration extends BaseEntity {
 		if (checkDependency) {
 			ensureNoActiveChildObjects(checkOnlyCollectedSpmns);
 		}
-		
+
+		Boolean hasDeleteVisitRights = null;
 		for (Visit visit : getVisits()) {
+			if (visit.isActive() && visit.isCompleted()) {
+				if (hasDeleteVisitRights == null) {
+					hasDeleteVisitRights = AccessCtrlMgr.getInstance().hasDeleteVisitRights(this);
+				}
+
+				if (!hasDeleteVisitRights) {
+					throw OpenSpecimenException.userError(RbacErrorCode.ACCESS_DENIED);
+				}
+			}
+
 			visit.delete(checkDependency);
 		}
 		

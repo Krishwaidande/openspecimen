@@ -1484,11 +1484,18 @@ public class FormServiceImpl implements FormService, InitializingBean {
 
 						allowed = (siteCps == null || !siteCps.isEmpty());
 					}
-				} else if (entityType.equals("SpecimenCollectionGroup") || entityType.equals("Specimen") || entityType.equals("SpecimenEvent")) {
+				} else if (entityType.equals("SpecimenCollectionGroup")) {
 					if (cpId != null && cpId != -1L) {
-						allowed = AccessCtrlMgr.getInstance().hasVisitSpecimenEximRights(cpId);
+						allowed = AccessCtrlMgr.getInstance().hasVisitEximRights(cpId);
 					} else {
-						siteCps = AccessCtrlMgr.getInstance().getSiteCps(Resource.VISIT_N_SPECIMEN, Operation.EXIM);
+						siteCps = AccessCtrlMgr.getInstance().getSiteCps(Resource.VISIT, Operation.EXIM);
+						allowed = (siteCps == null || !siteCps.isEmpty());
+					}
+				} else if (entityType.equals("Specimen") || entityType.equals("SpecimenEvent")) {
+					if (cpId != null && cpId != -1L) {
+						allowed = AccessCtrlMgr.getInstance().hasSpecimenEximRights(cpId);
+					} else {
+						siteCps = AccessCtrlMgr.getInstance().getSiteCps(Resource.SPECIMEN, Operation.EXIM);
 						allowed = (siteCps == null || !siteCps.isEmpty());
 					}
 				}
